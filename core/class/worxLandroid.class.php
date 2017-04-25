@@ -46,7 +46,7 @@ class worxLandroid extends eqLogic {
 				'name' => 'Rafraichir',
 			),
 			'start' => array(
-				'name' => 'Démarage',
+				'name' => 'Démarrage',
 				'cmd' => 'data=%5B%5B%22settaggi%22%2C11%2C1%5D%5D', //data=[["settaggi",{},1]]
 			),
 			'stop' => array(
@@ -54,7 +54,7 @@ class worxLandroid extends eqLogic {
 				'cmd' => 'data=%5B%5B%22settaggi%22%2C12%2C1%5D%5D', //data=[["settaggi",{},1]]
 			),
 			'startZoneTraining' => array(
-				'name' => 'Démarage Entrainement',
+				'name' => 'Démarrage Entrainement',
 				'cmd' => 'data=%5B%5B%22settaggi%22%2C11%2C1%5D%5D', //data=[["settaggi",{},1]]
 			),
 				/* a verifier		

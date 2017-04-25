@@ -40,7 +40,7 @@ if (!isConnect()) {
 		<label class="col-sm-4 control-label">{{Faire un don au développeur}} :</label>
 		<div class="col-lg-8">
 			{{Ce plugin est gratuit pour que chacun puisse en profiter simplement.}}<br>
-			{{Il a ete testé avec le modele WG791E.1 (firmware 2.45)}}<br>
+			{{Il a été testé avec le modèle WG791E.1 (firmware 2.45)}}<br>
 			{{Si vous souhaitez tout de même faire un don au développeur du plugin, utilisez le lien suivant.}}<br><br>
 			<a class="btn" id="bt_paypal" href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=HM5MQ7APM44PY&lc=FR&item_name=plugin%20jeedom%20worxlandroid&currency_code=EUR&bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted" target="_new" >
 				<img src="https://www.paypalobjects.com/fr_FR/FR/i/btn/btn_donate_LG.gif" border="0" alt="{{Faire un don via Paypal au développeur Virux}}">
@@ -50,34 +50,10 @@ if (!isConnect()) {
 	<div class="form-group">
 		<label class="col-sm-4 control-label">{{Source}} :</label>
 		<div class="col-lg-8">
-			{{Ce plugin a ete développé avec l'aide de l'analyse du serveur web embarqué}}<br>
+			{{Ce plugin a été développé avec l'aide de l'analyse du serveur web embarqué}}<br>
 			{{ainsi que du projet worx-landroid-nodejs de mjiderhamn}}
 		</div>
 	</div>
 </div>
-
-<fieldset>
-	<div class="form-group">
-		<label class="col-lg-4 control-label">{{Global param 1}}</label>
-		<div class="col-lg-2">
-			<input class="configKey form-control" data-l1key="param1" />
-		</div>
-	</div>
-	<div class="form-group">
-		<label class="col-lg-4 control-label">{{Global param 2}}</label>
-		<div class="col-lg-2">
-			<input class="configKey form-control" data-l1key="param2" value="80" />
-		</div>
-	</div>
-	<div class="form-group">
-		<label class="col-lg-4 control-label">{{Global param 2}}</label>
-		<div class="col-lg-2">
-			<select class="configKey form-control" data-l1key="param3">
-				<option value="value1">value1</option>
-				<option value="value2">value2</option>
-			</select>
-		</div>
-	</div>
-</fieldset>
 </form>
 
