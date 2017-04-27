@@ -193,7 +193,7 @@ class worxLandroid extends eqLogic {
 			'state' => array(
 				'name' => "Status",
 				'subtype' => 'string',
-				'restkey' =>'state', //"state": "home",
+				'restkey' =>'state', //"state": "home",//"grass cutting"
 				'isvisible' => true,
 			),
 			'workReq' => array(
@@ -645,14 +645,15 @@ class worxLandroidCmd extends cmd {
  	{
 		log::add('worxLandroid', 'debug', __METHOD__.'('.json_encode($_options).') Type: '.$this->getType().' logicalId: '.$this->getLogicalId());
 		
-		if ($this->getLogicalId() == 'refresh') {
+		if ($this->getLogicalId() == 'refresh') 
+		{
 			$this->getEqLogic()->refresh();
 			return;
 		}
 		
 		if( $this->getType() == 'action' )
 		{
-			$cmdAction = $this->getLogicalId();
+			worxLandroid::initInfosMap();
 			if (isset(worxLandroid::$_actionMap[$this->getLogicalId()]))
 			{
 				$params = worxLandroid::$_actionMap[$this->getLogicalId()];
