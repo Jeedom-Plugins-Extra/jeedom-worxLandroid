@@ -20,6 +20,7 @@
  https://github.com/mjiderhamn/worx-landroid-nodejs (Home automation integration for Worx Landroid robotic mowers)
  https://hackaday.io/project/6717-project-landlord (Open source firmware for Worx Landroid robotic mower.)
  https://www.worxlandroid.com/en/software-update (firmware update)
+ //Redpine Signals, Inc.
  
 /* * ***************************Includes********************************* */
 require_once dirname(__FILE__) . '/../../../../core/php/core.inc.php';
@@ -193,7 +194,7 @@ class worxLandroid extends eqLogic {
 			'state' => array(
 				'name' => "Status",
 				'subtype' => 'string',
-				'restkey' =>'state', //"state": "home",//"grass cutting"
+				'restkey' =>'state', //"state": "home","grass cutting","following wire"
 				'isvisible' => true,
 			),
 			'workReq' => array(
@@ -230,7 +231,7 @@ class worxLandroid extends eqLogic {
 				'restkey' =>'ore_funz', //"ore_funz": [0, 0, 0, 0, 0, 0, 0],
 				'cbTransform' => function ($rawValue)
 				{
-					return print_r(array_combine(array('lundi','mardi','mercredi','jeudi','vendredi','samedi','dimanche'),$rawValue),true);
+					return json_encode(array_combine(array('lundi','mardi','mercredi','jeudi','vendredi','samedi','dimanche'),$rawValue));
 				},
 			),
 			
@@ -240,7 +241,7 @@ class worxLandroid extends eqLogic {
 				'restkey' =>'ora_on', //"ora_on": [0, 0, 0, 0, 0, 0, 0],
 				'cbTransform' => function ($rawValue)
 				{
-					return print_r(array_combine(array('lundi','mardi','mercredi','jeudi','vendredi','samedi','dimanche'),$rawValue),true);
+					return json_encode(array_combine(array('lundi','mardi','mercredi','jeudi','vendredi','samedi','dimanche'),$rawValue));
 				},
 			),
 			'min_on' => array(// Minutes on the hour (above) that the Landroid should start mowing, per weekday
@@ -249,7 +250,7 @@ class worxLandroid extends eqLogic {
 				'restkey' =>'min_on', //"min_on": [0, 0, 0, 0, 0, 0, 0],
 				'cbTransform' => function ($rawValue)
 				{
-					return print_r(array_combine(array('lundi','mardi','mercredi','jeudi','vendredi','samedi','dimanche'),$rawValue),true);
+					return json_encode(array_combine(array('lundi','mardi','mercredi','jeudi','vendredi','samedi','dimanche'),$rawValue));
 				},
 			),
 			'allarmi' => array( // Alarms - flags set to 1 when alarm is active
@@ -280,7 +281,7 @@ class worxLandroid extends eqLogic {
 							$alarm .= $alarmStr[$idx].';';
 					}
 					return $alarm;
-					//return print_r($rawValue,true);
+					//return json_encode($rawValue);
 				},
 // 				"allarmi": [ // Alarms - flags set to 1 when alarm is active
 // 					0, // [0] "Blade blocked"                                               ERROR_MESSAGES[0] = "Blade blocked";
@@ -322,7 +323,7 @@ class worxLandroid extends eqLogic {
 				'restkey' =>'settaggi', //"settaggi": [0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 				'cbTransform' => function ($rawValue)
 				{
-					return print_r($rawValue,true);
+					return json_encode($rawValue);
 				},
 // 				"settaggi": [ // Settings / state
 // 					0,
@@ -364,7 +365,7 @@ class worxLandroid extends eqLogic {
 				'restkey' =>'dist_area', //"dist_area": [1, 1, 1, 1],
 				'cbTransform' => function ($rawValue)
 				{
-					return print_r($rawValue,true);
+					return json_encode($rawValue);
 				},
 			),
 			'perc_per_area' => array( // Percentage per zone, expressed in 10% increments (i.e. 3 = 30%)
@@ -373,13 +374,13 @@ class worxLandroid extends eqLogic {
 				'restkey' =>'perc_per_area', //"perc_per_area": [1, 1, 1, 1],
 				'cbTransform' => function ($rawValue)
 				{
-					return print_r($rawValue,true);
+					return json_encode($rawValue);
 				},
 			),
 		);
 	}
 	
-	public static function cron5() {
+	public static function cron() {
 		foreach (eqLogic::byType('worxLandroid') as $worxLandroid) {
 			$worxLandroid->getInformations();
 			$mc = cache::byKey('worxLandroidWidgetmobile' . $worxLandroid->getId());
@@ -447,48 +448,12 @@ class worxLandroid extends eqLogic {
 			}
  			
  			log::add('worxLandroid', 'debug', __METHOD__.' '.__LINE__.' $jsondata '.$jsondata);
- 			
- 			/*if (is_null($jsondata)) //debug
- 			$jsondata = '{
-	"versione_fw": 2.45,
-	"lingua": 2,
-	"ore_funz": [0, 0, 0, 0, 0, 0, 0],
-	"ora_on": [0, 0, 0, 0, 0, 0, 0],
-	"min_on": [0, 0, 0, 0, 0, 0, 0],
-	"allarmi": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-	"settaggi": [0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-	"mac": [0, 35, 167, 164, 213, 71],
-	"time_format": 1,
-	"date_format": 0,
-	"rit_pioggia": 180,
-	"area": 0,
-	"enab_bordo": 1,
-	"percent_programmatore": 0,
-	"indice_area": 9,
-	"tempo_frenatura": 20,
-	"perc_rallenta_max": 70,
-	"canale": 0,
-	"num_ricariche_batt": 0,
-	"num_aree_lavoro": 1,
-	"dist_area": [1, 1, 1, 1],
-	"perc_per_area": [1, 1, 1, 1],
-	"area_in_lavoro": 0,
-	"email": "xxxxxxx@xxxxxx.xxx",
-	"perc_batt": "100",
-	"ver_proto": 1,
-	"state": "home",
-	"workReq": "user req grass cut",
-	"message": "none",
-	"batteryChargerState": "idle",
-	"distance": 0
-}';
-*/
- 			
+
  			$json = json_decode($jsondata,true);
  			
  			if (is_null($json))
  			{
-				log::add('worxLandroid', 'debug', 'Connexion KO for '.$equipement);
+				log::add('worxLandroid', 'info', 'Connexion KO for '.$equipement.' ('.$ip.')');
 				$cmd = $this->getCmd('info','communicationStatus');
 				if(is_object($cmd))
 				{
@@ -498,7 +463,7 @@ class worxLandroid extends eqLogic {
 			}
 			if (!isset($json['allarmi']))
 			{
-				log::add('worxLandroid', 'error', 'Check PinCode for '.$equipement);
+				log::add('worxLandroid', 'error', 'Check PinCode for '.$equipement.' ('.$ip.')');
 				$cmd = $this->getCmd('info','communicationStatus');
 				if(is_object($cmd))
 				{
