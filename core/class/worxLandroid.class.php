@@ -381,7 +381,8 @@ class worxLandroid extends eqLogic {
 	}
 	
 	public static function cron() {
-		foreach (eqLogic::byType('worxLandroid') as $worxLandroid) {
+		foreach (eqLogic::byType('worxLandroid') as $worxLandroid) 
+		{
 			$worxLandroid->getInformations();
 			$mc = cache::byKey('worxLandroidWidgetmobile' . $worxLandroid->getId());
 			$mc->remove();
@@ -419,7 +420,6 @@ class worxLandroid extends eqLogic {
 	
 	public function getInformations($jsondata=null)
 	{
-		log::add('worxLandroid', 'debug', __METHOD__.' '.__LINE__.' enter ');
 		if ($this->getIsEnable() == 1)
 		{
 			$equipement = $this->getName();
@@ -503,61 +503,60 @@ class worxLandroid extends eqLogic {
 	}
 
 	public function postSave() {
-		log::add('worxLandroid', 'debug', __METHOD__.' '.__LINE__.' enter ');
-		
 		self::initInfosMap();
 		$order = 0;
 		
 		//Cmd Actions
 		foreach(self::$_actionMap as $cmdLogicalId => $params)
 		{
-			log::add('worxLandroid', 'debug', __METHOD__.' '.__LINE__.' cmdAction '.$cmdLogicalId.'('.__($params['name'], __FILE__).') '.($params['subtype'] ?: 'subtypedefault'));
 			$worxLandroidCmd = $this->getCmd('action', $cmdLogicalId);
 			if (!is_object($worxLandroidCmd))
 			{
+				log::add('worxLandroid', 'debug', __METHOD__.' '.__LINE__.' cmdAction create '.$cmdLogicalId.'('.__($params['name'], __FILE__).') '.($params['subtype'] ?: 'subtypedefault'));
 				$worxLandroidCmd = new worxLandroidCmd();
-			}
-			$worxLandroidCmd->setLogicalId($cmdLogicalId);
-			$worxLandroidCmd->setEqLogic_id($this->getId());
-			$worxLandroidCmd->setName(__($params['name'], __FILE__));
-			$worxLandroidCmd->setType($params['type'] ?: 'action');
-			$worxLandroidCmd->setSubType($params['subtype'] ?: 'other');
-			$worxLandroidCmd->setIsVisible($params['isvisible'] ?: true);
-			if(isset($params['tpldesktop']))
-				$worxLandroidCmd->setTemplate('dashboard',$params['tpldesktop']);
-			if(isset($params['tplmobile']))
-				$worxLandroidCmd->setTemplate('mobile',$params['tplmobile']);
-			$worxLandroidCmd->setOrder($order++);
-			$worxLandroidCmd->save();
 			
+				$worxLandroidCmd->setLogicalId($cmdLogicalId);
+				$worxLandroidCmd->setEqLogic_id($this->getId());
+				$worxLandroidCmd->setName(__($params['name'], __FILE__));
+				$worxLandroidCmd->setType($params['type'] ?: 'action');
+				$worxLandroidCmd->setSubType($params['subtype'] ?: 'other');
+				$worxLandroidCmd->setIsVisible($params['isvisible'] ?: true);
+				if(isset($params['tpldesktop']))
+					$worxLandroidCmd->setTemplate('dashboard',$params['tpldesktop']);
+				if(isset($params['tplmobile']))
+					$worxLandroidCmd->setTemplate('mobile',$params['tplmobile']);
+				$worxLandroidCmd->setOrder($order++);
+				
+				$worxLandroidCmd->save();
+			}
 		}
 		//Cmd Infos
 		foreach(self::$_infosMap as $cmdLogicalId=>$params)
 		{
-			log::add('worxLandroid', 'debug', __METHOD__.' '.__LINE__.' cmdInfo '.$cmdLogicalId.'('.__($params['name'], __FILE__).') '.($params['subtype'] ?: 'subtypedefault'));
-		
 			$worxLandroidCmd = $this->getCmd('info', $cmdLogicalId);
 			if (!is_object($worxLandroidCmd))
 			{
+				log::add('worxLandroid', 'debug', __METHOD__.' '.__LINE__.' cmdInfo create '.$cmdLogicalId.'('.__($params['name'], __FILE__).') '.($params['subtype'] ?: 'subtypedefault'));
 				$worxLandroidCmd = new worxLandroidCmd();
+				
+				$worxLandroidCmd->setLogicalId($cmdLogicalId);
+				$worxLandroidCmd->setEqLogic_id($this->getId());
+				$worxLandroidCmd->setName(__($params['name'], __FILE__));
+				$worxLandroidCmd->setType($params['type'] ?: 'info');
+				$worxLandroidCmd->setSubType($params['subtype'] ?: 'numeric');
+				$worxLandroidCmd->setIsVisible($params['isvisible'] ?: false);
+				if(isset($params['unite']))
+					$worxLandroidCmd->setUnite($params['unite']);
+				$worxLandroidCmd->setTemplate('dashboard',$params['tpldesktop']?: 'badge');
+				$worxLandroidCmd->setTemplate('mobile',$params['tplmobile']?: 'badge');
+				$worxLandroidCmd->setOrder($order++);
+				
+				$worxLandroidCmd->save();
 			}
-			$worxLandroidCmd->setLogicalId($cmdLogicalId);
-			$worxLandroidCmd->setEqLogic_id($this->getId());
-			$worxLandroidCmd->setName(__($params['name'], __FILE__));
-			$worxLandroidCmd->setType($params['type'] ?: 'info');
-			$worxLandroidCmd->setSubType($params['subtype'] ?: 'numeric');
-			$worxLandroidCmd->setIsVisible($params['isvisible'] ?: false);
-			if(isset($params['unite']))
-				$worxLandroidCmd->setUnite($params['unite']);
-			$worxLandroidCmd->setTemplate('dashboard',$params['tpldesktop']?: 'badge');
-			$worxLandroidCmd->setTemplate('mobile',$params['tplmobile']?: 'badge');
-			$worxLandroidCmd->setOrder($order++);
-			$worxLandroidCmd->save();
 		}
 		//refreshcmdinfo
 		$this->getInformations();
 	}
-
 	
 	public function toHtml($_version = 'dashboard') {
 		$replace = $this->preToHtml($_version);
@@ -582,21 +581,16 @@ class worxLandroid extends eqLogic {
 			}
 		}
 		$replace['#cmd#'] = $cmd_html;
-		
-		log::add('opening', 'debug',  __METHOD__.' End');
 		return template_replace($replace, getTemplate('core', $version, 'worxLandroid', 'worxLandroid'));
 	}
 	
-
 	/*     * **********************Getteur Setteur*************************** */
 }
 
 class worxLandroidCmd extends cmd {
 	/*     * *************************Attributs****************************** */
 
-
 	/*     * ***********************Methode static*************************** */
-
 
 	/*     * *********************Methode d'instance************************* */
 
@@ -615,14 +609,19 @@ class worxLandroidCmd extends cmd {
 			$this->getEqLogic()->refresh();
 			return;
 		}
-		
+
 		if( $this->getType() == 'action' )
 		{
 			worxLandroid::initInfosMap();
 			if (isset(worxLandroid::$_actionMap[$this->getLogicalId()]))
 			{
 				$params = worxLandroid::$_actionMap[$this->getLogicalId()];
-				if(isset($params['cmd']))
+
+				if(isset($params['callback']) && is_callable($params['callback']))
+				{
+					log::add('worxLandroid', 'debug', __METHOD__.'calling back');
+					call_user_func($params['callback'], $this);
+				}elseif(isset($params['cmd']))
 				{
 					$eqLogic = $this->getEqLogic();
 					$ip = $eqLogic->getConfiguration('addressip');
@@ -642,6 +641,7 @@ class worxLandroidCmd extends cmd {
 					
 					$eqLogic->getInformations($jsondata);
 				}
+
 				return true;
 			}
 		} else {
