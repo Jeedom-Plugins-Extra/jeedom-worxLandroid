@@ -41,7 +41,6 @@ if (!isConnect()) {
 		<div class="col-lg-8">
 			{{Ce plugin est gratuit pour que chacun puisse en profiter simplement.}}<br>
 			{{il a ete testé avec le modele WG791E.1 firmware 2.47 et 2.61}}<br>
-			{{Si vous souhaitez tout de même faire un don au développeur du plugin, utilisez le lien suivant.}}<br><br>
 		</div>
 	</div>
 	<div class="form-group">
