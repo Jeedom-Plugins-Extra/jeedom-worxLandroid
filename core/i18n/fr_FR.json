@@ -34,17 +34,14 @@
     "plugins\/worxLandroid\/plugin_info\/configuration.php": {
         "Configuration": "Configuration",
         "Accès à la configuration": "Accès à la configuration",
-        "Faire un don au développeur": "Faire un don au développeur",
+        "Information sur le plugin": "Information sur le plugin",
         "Ce plugin est gratuit pour que chacun puisse en profiter simplement.": "Ce plugin est gratuit pour que chacun puisse en profiter simplement.",
-        "Si vous souhaitez tout de même faire un don au développeur du plugin, utilisez le lien suivant.": "Si vous souhaitez tout de même faire un don au développeur du plugin, utilisez le lien suivant.",
-        "Faire un don via Paypal au développeur Virux": "Faire un don via Paypal au développeur Virux",
         "Source": "Source",
         "Ce plugin a ete développé avec l'aide de l'analyse du serveur web embarqué": "Ce plugin a ete développé avec l'aide de l'analyse du serveur web embarqué",
         "ainsi que du projet worx-landroid-nodejs de mjiderhamn": "ainsi que du projet worx-landroid-nodejs de mjiderhamn",
         "Global param 1": "Global param 1",
         "Global param 2": "Global param 2",
-        "il a ete testé avec le modele WG791E.1 firmware 2.45": "il a ete testé avec le modele WG791E.1 firmware 2.45",
-        "Il a ete testé avec le modele WG791E.1 firmware 2.45": "Il a ete testé avec le modele WG791E.1 firmware 2.45"
+        "il a ete testé avec le modele WG791E.1 firmware 2.47 et 2.61": "il a ete testé avec le modele WG791E.1 firmware 2.47 et 2.61",
     },
     "plugins\/worxLandroid\/desktop\/js\/worxLandroid.js": {
         "Nom": "Nom",

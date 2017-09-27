@@ -20,6 +20,7 @@
  https://github.com/mjiderhamn/worx-landroid-nodejs (Home automation integration for Worx Landroid robotic mowers)
  https://hackaday.io/project/6717-project-landlord (Open source firmware for Worx Landroid robotic mower.)
  https://www.worxlandroid.com/en/software-update (firmware update)
+ https://github.com/ldittmar81/ioBroker.landroid
  //Redpine Signals, Inc.
  
 /* * ***************************Includes********************************* */
@@ -58,6 +59,12 @@ class worxLandroid extends eqLogic {
 				'name' => 'Démarrage Entrainement',
 				'cmd' => 'data=%5B%5B%22settaggi%22%2C11%2C1%5D%5D', //data=[["settaggi",{},1]]
 			),
+// 			'setWorkingTimePercent' => array(
+// 				'name' => "Définir Poucentage de temps de travail",
+// 				'linkedInfo' => 'WorkingTimePercent',
+// 				'subtype' => 'slider',
+// 				'cmd' => 'data=%5B%5B%22percent_programmatore%22%2C0%2C[[[VALUE]]]%5D%5D', //data=[["percent_programmatore",0,100]]
+// 			),
 				/* a verifier		
 				// 11 = start
 				// 12 = stop (& return to base)
@@ -118,6 +125,7 @@ class worxLandroid extends eqLogic {
 			),
 			'workingTimePercent' => array(
 				'name' => "Poucentage de temps de travail",
+				//'linkedAction' => 'setWorkingTimePercent',
 				'restkey' =>'percent_programmatore', //"percent_programmatore": 0,
 				'isvisible' => true,
 				'unite' => '%',
@@ -414,7 +422,7 @@ class worxLandroid extends eqLogic {
 		try {
 			$this->getInformations();
 		} catch (Exception $exc) {
-			log::add('virtual', 'error', __('Erreur pour ', __FILE__) . $eqLogic->getHumanName() . ' : ' . $exc->getMessage());
+			log::add('worxLandroid', 'error', __('Erreur pour ', __FILE__) . $eqLogic->getHumanName() . ' : ' . $exc->getMessage());
 		}
 	}
 	
@@ -438,11 +446,6 @@ class worxLandroid extends eqLogic {
 				curl_setopt($ch, CURLOPT_URL, $url);
 				curl_setopt($ch, CURLOPT_BINARYTRANSFER, true);
 				curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-// 				if(true) //keepalive
-// 				{
-// 					curl_setopt($ch, CURLOPT_POST, true);
-// 					curl_setopt($ch, CURLOPT_POSTFIELDS,'data=%5B%5B%22indice_area%22%2C0%2C9%5D%5D'); //set area to 1000m², todo if work take a config parameters
-// 				}
 				$jsondata = curl_exec($ch);
 				curl_close($ch);
 			}
@@ -454,28 +457,17 @@ class worxLandroid extends eqLogic {
  			if (is_null($json))
  			{
 				log::add('worxLandroid', 'info', 'Connexion KO for '.$equipement.' ('.$ip.')');
-				$cmd = $this->getCmd('info','communicationStatus');
-				if(is_object($cmd))
-				{
-					$cmd->event(false);
-				}
+				$this->checkAndUpdateCmd('communicationStatus',false);
 				return false;
 			}
 			if (!isset($json['allarmi']))
 			{
 				log::add('worxLandroid', 'error', 'Check PinCode for '.$equipement.' ('.$ip.')');
-				$cmd = $this->getCmd('info','communicationStatus');
-				if(is_object($cmd))
-				{
-					$cmd->event(false);
-				}
+				$this->checkAndUpdateCmd('communicationStatus',false);
 				return false;
 			}
-			$cmd = $this->getCmd('info','communicationStatus');
-			if(is_object($cmd))
-			{
-				$cmd->event(true);
-			}
+			
+			$this->checkAndUpdateCmd('communicationStatus',true);
 			
 			self::initInfosMap();
 			
@@ -484,18 +476,15 @@ class worxLandroid extends eqLogic {
 			{
 				if(isset($params['restkey'], $json[$params['restkey']]))
 				{
-					log::add('worxLandroid', 'debug', $cmdLogicalId.' => '.json_encode($json[$params['restkey']]));
-					$cmd = $this->getCmd('info',$cmdLogicalId);
-					if(is_object($cmd))
+					//log::add('worxLandroid', 'debug',  __METHOD__.' '.__LINE__.' '.$cmdLogicalId.' => '.json_encode($json[$params['restkey']]));
+					$value = $json[$params['restkey']];
+					if(isset($params['cbTransform']) && is_callable($params['cbTransform']))
 					{
-						$value = $json[$params['restkey']];
-						if(isset($params['cbTransform']) && is_callable($params['cbTransform']))
-						{
-							$value = call_user_func($params['cbTransform'], $value);
-							log::add('worxLandroid', 'debug','Transform to => '.json_encode($value));
-						}
-						$cmd->event($value);
+						$value = call_user_func($params['cbTransform'], $value);
+						//log::add('worxLandroid', 'debug', __METHOD__.' '.__LINE__.' Transform to => '.json_encode($value));
 					}
+					
+					$this->checkAndUpdateCmd($cmdLogicalId,$value);
 				}
 			}
 			return true;
@@ -527,9 +516,13 @@ class worxLandroid extends eqLogic {
 					$worxLandroidCmd->setTemplate('mobile',$params['tplmobile']);
 				$worxLandroidCmd->setOrder($order++);
 				
+				if(isset($params['linkedInfo']))
+					$worxLandroidCmd->setValue($this->getCmd('info', $params['linkedInfo']));
+				
 				$worxLandroidCmd->save();
 			}
 		}
+		
 		//Cmd Infos
 		foreach(self::$_infosMap as $cmdLogicalId=>$params)
 		{
@@ -550,10 +543,11 @@ class worxLandroid extends eqLogic {
 				$worxLandroidCmd->setTemplate('dashboard',$params['tpldesktop']?: 'badge');
 				$worxLandroidCmd->setTemplate('mobile',$params['tplmobile']?: 'badge');
 				$worxLandroidCmd->setOrder($order++);
-				
+
 				$worxLandroidCmd->save();
 			}
 		}
+		
 		//refreshcmdinfo
 		$this->getInformations();
 	}
@@ -573,6 +567,7 @@ class worxLandroid extends eqLogic {
 			if ($br_before == 0 && $cmd->getDisplay('forceReturnLineBefore', 0) == 1) {
 				$cmd_html .= '<br/>';
 			}
+			
 			$cmd_html .= $cmd->toHtml($_version, '', $replace['#cmd-background-color#']);
 			$br_before = 0;
 			if ($cmd->getDisplay('forceReturnLineAfter', 0) == 1) {
@@ -612,6 +607,10 @@ class worxLandroidCmd extends cmd {
 
 		if( $this->getType() == 'action' )
 		{
+		
+			if( $this->getSubType() == 'slider' && $_options['slider'] == '')
+				return;
+				
 			worxLandroid::initInfosMap();
 			if (isset(worxLandroid::$_actionMap[$this->getLogicalId()]))
 			{
@@ -623,6 +622,10 @@ class worxLandroidCmd extends cmd {
 					call_user_func($params['callback'], $this);
 				}elseif(isset($params['cmd']))
 				{
+					$cmdval = $params['cmd'];
+					if($this->getSubType() == 'slider')
+						$cmdval = str_replace('[[[VALUE]]]',$_options['slider'],$cmdval);
+					
 					$eqLogic = $this->getEqLogic();
 					$ip = $eqLogic->getConfiguration('addressip');
 					$user = $eqLogic->getConfiguration('user','admin');
@@ -634,10 +637,10 @@ class worxLandroidCmd extends cmd {
 					curl_setopt($ch, CURLOPT_BINARYTRANSFER, true);
 					curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 					curl_setopt($ch, CURLOPT_POST, true);
-					curl_setopt($ch, CURLOPT_POSTFIELDS,$params['cmd']);
+					curl_setopt($ch, CURLOPT_POSTFIELDS,$cmdval);
 					$jsondata = curl_exec($ch);
 					curl_close($ch);
-					log::add('worxLandroid', 'debug', __METHOD__.'('.$url.' with '.$params['cmd'].') '.$jsondata);
+					log::add('worxLandroid', 'debug', __METHOD__.'('.$url.' with '.$cmdval.') '.$jsondata);
 					
 					$eqLogic->getInformations($jsondata);
 				}

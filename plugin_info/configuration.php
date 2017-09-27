@@ -37,14 +37,11 @@ if (!isConnect()) {
 		</div>
 	</div>
 	<div class="form-group">
-		<label class="col-sm-4 control-label">{{Faire un don au développeur}} :</label>
+		<label class="col-sm-4 control-label">{{Information sur le plugin}} :</label>
 		<div class="col-lg-8">
 			{{Ce plugin est gratuit pour que chacun puisse en profiter simplement.}}<br>
-			{{Il a été testé avec le modèle WG791E.1 (firmware 2.45)}}<br>
+			{{il a ete testé avec le modele WG791E.1 firmware 2.47 et 2.61}}<br>
 			{{Si vous souhaitez tout de même faire un don au développeur du plugin, utilisez le lien suivant.}}<br><br>
-			<a class="btn" id="bt_paypal" href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=HM5MQ7APM44PY&lc=FR&item_name=plugin%20jeedom%20worxlandroid&currency_code=EUR&bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted" target="_new" >
-				<img src="https://www.paypalobjects.com/fr_FR/FR/i/btn/btn_donate_LG.gif" border="0" alt="{{Faire un don via Paypal au développeur Virux}}">
-			</a>
 		</div>
 	</div>
 	<div class="form-group">

@@ -33,7 +33,12 @@ if ($worxLandroid->getEqType_name() != 'worxLandroid') {
 $ip = $worxLandroid->getConfiguration('addressip');
 $user = $worxLandroid->getConfiguration('user','admin');
 $pin = $worxLandroid->getConfiguration('pincode');
-$url = "http://{$user}:{$pin}@{$ip}";
+
+if($_SERVER['SERVER_NAME'] == config::byKey('externalAddr'))
+	$url ='/plugins/worxLandroid/proxy/'.init('id').'/'; // external -> proxy -> mower
+else
+	$url = "http://{$user}:{$pin}@{$ip}"; //local -> direct to mower
+
 ?>
 <iframe src="<?php echo $url?>" style="width:325px; margin:auto;display: block;height: 100%;"></iframe>
 
